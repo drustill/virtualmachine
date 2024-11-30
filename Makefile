@@ -1,14 +1,17 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
-TARGET = my_program
+TARGET = build/libutils.so
 
+.PHONY: all clean utils
+
+# Default target builds the utils library
 all: $(TARGET)
 
-$(TARGET): main.o
-	$(CC) $(CFLAGS) -o $(TARGET) main.o
+# Build the utils library
+$(TARGET):
+	$(MAKE) -C utils/
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
-
+# Clean both the utils directory and the build directory
 clean:
-	rm -f *.o $(TARGET)
+	$(MAKE) -C utils/ clean
+	rm -rf build

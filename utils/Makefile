@@ -3,9 +3,9 @@ CC = gcc
 CFLAGS = -O3 -Wall -std=c2x -fPIC
 LDFLAGS = -shared
 
-TARGET = libutils.so
+TARGET = ../build/libutils.so
 SRCS = utils.c
-OBJS = $(SRCS:.c=.o)
+OBJS = ../build/utils.o
 
 .PHONY: all clean
 
@@ -14,8 +14,9 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-%.o: %.c
+../build/utils.o: utils.c
+	mkdir -p ../build
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f ../build/utils.o ../build/libutils.so

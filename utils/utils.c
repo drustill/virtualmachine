@@ -1,8 +1,8 @@
 /* utils.c */
 /* Credits: https://www.youtube.com/@dr-Jonas-Birch */
 
-/* #include <birchutils.h> */
-#include "birchutils.h"
+/* #include <utils.h> */
+#include "utils.h"
 
 /* @brief memcpy */
 void copy(int8 *dst, int8 *src, int16 size) {
