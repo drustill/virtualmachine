@@ -215,8 +215,7 @@ void execute(VM*);
  Program *exampleprogram(VM*);
 int8 map(Opcode);
 VM *virtualmachine(void);
-// int main(int,char**);
-int main(void);
+int main(int,char**);
 
 /* Breakline visualization */
 
