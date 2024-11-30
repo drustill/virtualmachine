@@ -15,6 +15,8 @@
 #define ErrMem 0x02
 #define ErrSegv 0x04 /* Segmentation fault */
 
+#define segfault(VM) error(vm, ErrSegv)
+
 typedef unsigned char int8;
 typedef unsigned short int int16;
 typedef unsigned int int32;
