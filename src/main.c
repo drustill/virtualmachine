@@ -224,7 +224,7 @@ Program *exampleprogram(VM *vm) {
     s1 = map(mov);
     s2 = map(nop);
 
-    i1 = (Instruction *)malloc($i s1);
+    i1 = (Instruction *)malloc( s1);
     i2 = (Instruction *)malloc( s2);
     i3 = (Instruction *)malloc( s2);
     assert(i1 && i2);
@@ -262,6 +262,7 @@ Program *exampleprogram(VM *vm) {
     /* Why does this work in example */
     // free(i1);
     free(i2);
+    free(i3);
 
     vm->b = total;
 
