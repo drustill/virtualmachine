@@ -15,7 +15,7 @@
 #define ErrMem 0x02
 #define ErrSegv 0x04 /* Segmentation fault */
 
-#define segfault(VM) error(vm, ErrSegv)
+#define segfault(x) error((x), ErrSegv)
 
 typedef unsigned char int8;
 typedef unsigned short int int16;
@@ -144,7 +144,7 @@ typedef struct s_instruction {
  * @typedef Errorcode
  * @brief Represents error codes used in the VM.
  */
-typedef int8 Errorcode;
+typedef unsigned char Errorcode;
 
 /**
  * @typedef Memory

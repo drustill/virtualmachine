@@ -13,11 +13,12 @@ int8 map(Opcode o) {
     InstructionMap *p;
 
     ret = 0;
-    for (n=InstructionMaps, p=instrmap; n; n--, p++)
+    for (n=InstructionMaps, p=instrmap; n; n--, p++) {
         if (p->o == o) {
             ret = p->s;
             break;
         }
+    }
     
     return ret;
 }
@@ -106,7 +107,6 @@ void execinstr(VM* vm, Program *p) {
         case 3:
             a1 = *(p+1);
             a2 = *(p+3);
-
             break;
 
         default:
@@ -166,9 +166,9 @@ void execute(VM *vm) {
         vm $ip += size;
         pp += size;
 
-       if ((int32)pp > brkaddr)
-             segfault(vm);
-            size = map(*pp);
+        if ((int32)pp > brkaddr)
+            segfault(vm);
+        size = map(*pp);
         execinstr(vm, pp);
     } while (*pp != (Opcode)hlt);
 
@@ -215,63 +215,62 @@ VM *virtualmachine() {
  * @return Program* Pointer to the assembled program in VM memory
  */
 Program *exampleprogram(VM *vm) {
-    Program *p;                    /* Program pointer into VM memory */
-    Instruction *i1, *i2, *i3;     /* Individual instruction buffers */
-    Args a1;                       /* Argument for mov instruction */
-    int16 s1, s2, sa1;            /* Size trackers for instructions */
+    Program *p;
+    Instruction *i1, *i2, *i3;
+    Args a1;
+    int16 s1, s2, sa1;
 
-    /* Initialize sizes and arguments */
     a1 = 0;
-    s1 = map(mov);                 /* Get size for mov instruction */
-    s2 = map(nop);                 /* Get size for nop instruction */
+    s1 = map(mov);
+    s2 = map(nop);
 
-    /* Allocate space for instructions */
     i1 = (Instruction *)malloc($i s1);
-    i2 = (Instruction *)malloc(s2);
-    i3 = (Instruction *)malloc(s2);
-    assert(i1 && i2);              /* Verify allocation success */
-    zero($1 i1, s1);              /* Zero-initialize instruction buffers */
+    i2 = (Instruction *)malloc( s2);
+    i3 = (Instruction *)malloc( s2);
+    assert(i1 && i2);
+    zero($1 i1, s1);
     zero($1 i2, s2);
     zero($1 i3, s2);
 
-    /* Set up mov instruction */
     i1->o = mov;
-    sa1 = (s1-1);                  /* Calculate argument size */
-    a1 = 0x0005;                   /* Value to move into AX */
+    sa1 = (s1-1);
+    a1 = 0x0005;
     // 0000 0001 mov eax
     // 0000 0000
     // 0000 0005  mov eax,0x05
 
-    /* Begin copying instructions to VM memory */
     p = vm->m;
-    copy($1 p, $1 i1, 1);         /* Copy mov opcode */
+    copy($1 p, $1 i1, 1);
     p++;
 
-    /* Copy mov argument if present */
     if (a1) {
         copy($1 p, $1 &a1, sa1);
         p += sa1;
     }
 
-    /* Set up and copy nop instruction */
     i2->o = nop;
     copy($1 p, $1 i2, 1);
 
-    /* Set up and copy halt instruction */
     p++;
     i3->o = hlt;
     copy($1 p, $1 i3, 1);
 
-    /* Configure VM state */
-    vm->b = (s1+sa1+s2+s2);        /* Set break line after code */
-    vm $ip = (Reg)vm->m;           /* Set instruction pointer to start */
-    vm $sp = (Reg)-1;              /* Initialize stack pointer */
+    int16 total = (s1+sa1+s2+s2);
+    vm $ip = (Reg)vm->m;
+    vm $sp = (Reg)-1;
 
-    /* Cleanup */
-    free(i1);
+    /* Why does this work in example */
+    // free(i1);
     free(i2);
 
-    return (Program *)&vm->m;       /* Return pointer to program in memory */
+    vm->b = total;
+
+    for (int i = 0; i < vm->b; i++) {
+        printf("%02x ", vm->m[i]);
+    }
+    printf("\n");
+
+    return (Program *)&vm->m;
 }
 
 int main(int argc, char *argv[]) {
@@ -279,10 +278,15 @@ int main(int argc, char *argv[]) {
 	VM *vm;
 
 	vm = virtualmachine();
-	printf("vm = %p (sz: %d)\n", vm, sizeof(struct s_vm));
+	printf("vm   = %p (sz: %d)\n", vm, sizeof(struct s_vm));
 
     prog = exampleprogram(vm);
-    printf("prog = %p\n", prog);
+
+    printf("Memory layout: ");
+    for(int i = 0; i < vm->b; i++) {
+        printf("%02x ", vm->m[i]);
+    }
+    printf("\n");
 
     execute(vm);
 
